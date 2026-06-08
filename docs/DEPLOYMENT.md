@@ -112,6 +112,7 @@ npm run seed:admin
 
 | Issue | Fix |
 | --- | --- |
+| Login/register returns `405` on the Vercel URL | Set `VITE_API_URL` in Vercel to the Render API URL, for example `https://your-api.onrender.com/api`, then redeploy the frontend. |
 | Login/register returns `500` | Check Render logs first. Most auth failures during deployment are MongoDB connection failures. |
 | CORS errors | Set `CLIENT_URL` to the exact Vercel URL without a trailing slash. Use comma-separated URLs for multiple allowed frontends. |
 | Report fails instantly | Verify `GROQ_API_KEY` and `GROQ_MODEL`. |

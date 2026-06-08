@@ -14,7 +14,12 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await authApi.register(form);
+      const normalizedForm = {
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+      };
+      const res = await authApi.register(normalizedForm);
       login(res.data.data.user, res.data.data.token);
       toast.success('Account created!');
       navigate('/dashboard');

@@ -16,7 +16,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await authApi.login({ email, password });
+      const res = await authApi.login({ email: email.trim().toLowerCase(), password });
       login(res.data.data.user, res.data.data.token);
       toast.success('Welcome back!');
       navigate('/dashboard');

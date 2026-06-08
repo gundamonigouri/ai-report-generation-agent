@@ -2,6 +2,12 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+if (import.meta.env.PROD && API_URL === '/api') {
+  throw new Error(
+    'Missing VITE_API_URL. Set it in Vercel to your backend URL, for example https://your-api.onrender.com/api'
+  );
+}
+
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
@@ -18,7 +24,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response?.status === 401) {
+    const authRoute = error.config?.url?.startsWith('/auth');
+    if (error.response?.status === 401 && !authRoute) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       if (!window.location.pathname.includes('/login')) {

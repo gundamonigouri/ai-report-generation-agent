@@ -61,8 +61,21 @@ app.use(errorHandler);
 
 async function start() {
   await connectDatabase();
-  app.listen(config.port, () => {
+
+  const server = app.listen(config.port, () => {
     logger.info(`Server running on port ${config.port}`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      logger.error(`Port ${config.port} is already in use. Change PORT in .env or stop the process using it.`, {
+        error: err.message,
+        port: config.port,
+      });
+    } else {
+      logger.error('Server error during startup', { error: err.message });
+    }
+    process.exit(1);
   });
 }
 

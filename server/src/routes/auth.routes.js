@@ -31,12 +31,13 @@ router.post(
         return res.status(400).json({ success: false, message: 'Invalid input detected' });
       }
 
-      const exists = await User.findOne({ email });
+      const normalizedEmail = String(email).trim().toLowerCase();
+      const exists = await User.findOne({ email: normalizedEmail });
       if (exists) {
         return res.status(409).json({ success: false, message: 'Email already registered' });
       }
 
-      const user = await User.create({ name: sanitizeUserInput(name), email, password });
+      const user = await User.create({ name: sanitizeUserInput(name), email: normalizedEmail, password });
       const token = signToken(user);
       res.status(201).json({
         success: true,
@@ -55,7 +56,8 @@ router.post(
   async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      const user = await User.findOne({ email }).select('+password');
+      const normalizedEmail = String(email).trim().toLowerCase();
+      const user = await User.findOne({ email: normalizedEmail }).select('+password');
       if (!user || !(await user.comparePassword(password))) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
