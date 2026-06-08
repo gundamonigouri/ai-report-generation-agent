@@ -63,11 +63,14 @@ router.post(
         return res.status(403).json({ success: false, message: 'Account deactivated' });
       }
 
-      user.lastLoginAt = new Date();
-      await user.save();
-
       const token = signToken(user);
-      res.json({ success: true, data: { user, token } });
+      const lastLoginAt = new Date();
+      await User.updateOne({ _id: user._id }, { $set: { lastLoginAt } });
+
+      const responseUser = user.toJSON();
+      responseUser.lastLoginAt = lastLoginAt;
+
+      res.json({ success: true, data: { user: responseUser, token } });
     } catch (error) {
       next(error);
     }
